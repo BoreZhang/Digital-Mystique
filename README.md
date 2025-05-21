@@ -1,4 +1,4 @@
-# Project Mystique: AI-Powered X-Men Character Skin Transformation
+# Dightal Mystique: AI-Powered X-Men Character Skin Transformation
 
 ![Mystique Transformation](https://static1.cbrimages.com/wordpress/wp-content/uploads/2018/09/mystique-dark-phoenix-header.jpg)
 
