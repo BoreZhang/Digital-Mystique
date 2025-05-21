@@ -1,4 +1,4 @@
-# Dightal Mystique: AI-Powered X-Men Character Skin Transformation
+# Digital Mystique: AI-Powered X-Men Character Skin Transformation
 
 ![Mystique Transformation](https://static1.cbrimages.com/wordpress/wp-content/uploads/2018/09/mystique-dark-phoenix-header.jpg)
 
@@ -73,8 +73,8 @@ A workflow designed for processing video sequences using:
 
 1. **Clone this repository**
    ```bash
-   git clone https://github.com/BoreZhang/Project-Mystique.git
-   cd Project-Mystique
+   git clone https://github.com/BoreZhang/Digital-Mystique.git
+   cd Digital-Mystique
    ```
 
 2. **Install ComfyUI**
