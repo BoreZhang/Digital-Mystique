@@ -83,7 +83,7 @@ This workflow executes the final video generation task (Stage 4).
      * clip\_g.safetensors  
      * clip\_l.safetensors  
      * t5xxl\_fp16.safetensors  
-   * **Segmentation Models** (for human-parser-comfyui-node, place in ComfyUI/models/schp/):  
+   * **Segmentation Models** (for human-parser-comfyui-node, place in comfyui/models/schp/):  
      * Download the model based on the LIP dataset as recommended in the node's documentation.  
    * **Video Model** (place in ComfyUI/models/checkpoints/ or a dedicated video model folder):  
      * Wan2.1-Fun-1.3B-Control.safetensors  
@@ -93,12 +93,12 @@ This workflow executes the final video generation task (Stage 4).
 ### **Execution**
 
 1. **Image Generation**:  
-   * Load the Mystique\_Image\_Hybrid.json workflow in ComfyUI.  
+   * Load the Mystique_Image.json workflow in ComfyUI.  
    * Provide your source image.  
    * Run the workflow to generate the structure-perfect base image and the skin mask.  
    * Use these assets along with GPT-4o to create the detail layer, then composite them in Photoshop.  
 2. **Video Synthesis**:  
-   * Load the Mystique\_Video\_Synthesis.json workflow.  
+   * Load the Mystique_Video.json workflow.  
    * Input your source video and the final composited image from the previous step.  
    * Run the workflow to generate the final transformed video.
 
