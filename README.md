@@ -1,178 +1,126 @@
-# Digital Mystique: AI-Powered X-Men Character Skin Transformation
+# **Digital Mystique: AI-Powered X-Men Character Skin Transformation**
 
-![Mystique Transformation](https://static1.cbrimages.com/wordpress/wp-content/uploads/2018/09/mystique-dark-phoenix-header.jpg)
+## **📚 Project Overview**
 
-## 📚 Project Overview
+This project implements an innovative digital character transformation workflow, designed to resolve the core conflict in generative AI between **identity preservation** and **high-fidelity detail generation**. Using the character Mystique from *X-Men* as a case study, this research addresses the limitations of both time-consuming practical effects and single-model AI approaches.
 
-This project implements an innovative digital solution for transforming human skin to match the iconic blue scale appearance of Mystique from X-Men. Traditional makeup for this character requires 6-12 hours of application by a team of artists. Our approach eliminates this process by using advanced AI models in ComfyUI to achieve similar visual effects digitally.
+To overcome this challenge, this project proposes and validates a **synergistic, multi-stage hybrid workflow**. The process first leverages the superior identity preservation of **FLUX.1-Kontext** for a foundational transformation. It then uses precise semantic segmentation to guide **GPT-4o** in generating high-quality skin textures. The outputs are manually composited in **Adobe Photoshop**, and the final static image is animated using **Wan 2.1 Fun Control** for a temporally coherent video. This methodology achieves results superior to any single model, all on consumer-grade hardware.
 
-The system works in two phases:
-1. **Image Processing**: Converting still images with realistic Mystique skin transformation
-2. **Video Processing**: Applying consistent transformation across video sequences
+## **🎯 Key Features**
 
-## 🎯 Key Features
+* **Hybrid AI Architecture**: Combines the strengths of specialized models for an optimal, high-fidelity output.  
+* **High-Fidelity Identity Preservation**: Utilizes FLUX.1-Kontext to ensure the actor's core facial features and expressions remain unaltered.  
+* **High-Frequency Detail Generation**: Leverages GPT-4o to create photorealistic skin scales and specular highlights.  
+* **Precision Mask-Guided Control**: Employs face and body part segmentation for targeted, accurate editing.  
+* **Temporally Consistent Video**: Implements a ControlNet-based style transfer method to generate coherent video sequences.  
+* **Consumer-Grade Hardware Feasibility**: The entire workflow is designed and validated to run on a GPU with 24GB of VRAM.
 
-- Language-guided image editing using state-of-the-art AI models
-- High-quality skin texture transformation with scale patterns
-- Precise mask generation for targeted modifications
-- Video processing with temporal consistency
-- Preservation of identity and facial expressions
+## **🔬 Technical Implementation**
 
-## 🔬 Technical Implementation
+The final solution is a four-stage hybrid workflow designed to systematically address the challenges of character transformation.
 
-After extensive experimentation with various methods, I developed an optimal approach combining multiple AI models:
+### **The Final Solution**
 
-### Attempted Methods
-- Initially tried Flux Fill with inpainting approach, but encountered issues with mask alignment
-- Explored video models for direct style transfer, but found they required high-quality LoRAs
+1. **Stage 1: Foundational Transformation**  
+   * **Tool**: FLUX.1-Kontext  
+   * **Goal**: To perform the primary color and feature transformation (skin, hair, eyes) while ensuring complete identity preservation of the actor. The output is a "structurally correct" but detail-smooth base image.  
+2. **Stage 2: High-Frequency Detail Infusion**  
+   * **Tools**: GPT-4o, jonathandinu/face-parsing, Human Parts Detector  
+   * **Goal**: To generate a high-precision mask for all skin areas and guide GPT-4o to inpaint realistic, scaly blue skin texture only within this region. The output is a "detail-rich" image where structure may be slightly altered.  
+3. **Stage 3: Synergistic Composition**  
+   * **Tool**: Adobe Photoshop  
+   * **Goal**: To manually composite the outputs from the first two stages. By layering the detail-rich texture over the structure-perfect base using the generated mask, a final static image is created that combines the best of both models.  
+4. **Stage 4: Controlled Video Synthesis**  
+   * **Tool**: Wan 2.1 Fun Control  
+   * **Goal**: To animate the final static image. The composited image from Stage 3 is used as a style reference, and a Canny edge ControlNet signal is extracted from the source video to ensure motion consistency.
 
-### Final Solution
-- **Image Transformation**: Combined GPT Image and ICEdit with precise masks
-  - ICEdit for fast and effective hair and eye color changes
-  - Mask generation using human parts segmentation
-  - Final composition in Adobe Photoshop
+## **💻 ComfyUI Workflows**
 
-- **Video Transformation**: Implemented Wan 2.1 Fun Control workflow
-  - Selected for its ability to perform style transfer without LoRA training
-  - Provides good results for moderate motion sequences
-  - Used Canny edge detection for motion guidance
+This repository contains the core ComfyUI workflow files to implement the automated portions of this pipeline.
 
-## 💻 ComfyUI Workflows
+### **1\. Mystique\_Image\_Hybrid.json**
 
-This repository contains two main ComfyUI workflows:
+This workflow handles the image generation stages (1 and 2\) to produce the two key intermediate assets required for manual composition.
 
-### 1. Mystique_Image.json
-A workflow focused on transforming still images into Mystique's appearance using:
-- ICEdit for instruction-based image editing
-- Human segmentation masks for precise skin area targeting
-- Specialized prompts for yellow eyes and red hair transformation
+* **FLUX.1-Kontext Nodes**: Generate the structure-perfect base image.  
+* **Segmentation & Masking Nodes**: Generate the precise skin mask using Face and Body Parsing nodes.  
+* **Note**: This workflow prepares the base image and the mask. The GPT-4o detail layer must be generated externally (via API or other means) and then combined with these assets in Photoshop as described in Stage 3\.
 
-![Image Workflow Preview](https://i.imgur.com/placeholder.jpg)
+### **2\. Mystique\_Video\_Synthesis.json**
 
-### 2. Mystique_Video.json
-A workflow designed for processing video sequences using:
-- Wan 2.1 Fun Control for consistent video generation
-- CLIPVision-based processing for improved guidance
-- Temporal attention multiplier for smoother results
-- Customized prompts for blue scaled skin with metallic texture
+This workflow executes the final video generation task (Stage 4).
 
-![Video Workflow Preview](https://i.imgur.com/placeholder2.jpg)
+* **Inputs**: Requires the source video and the final composited "Mystique" image from Stage 3\.  
+* **Wan 2.1 Fun Control**: Serves as the core video generation model.  
+* **ControlNet**: Applies a Canny edge detector to the source video to guide the motion and structure of the output.
 
-## 🔧 Installation and Usage
+## **🔧 Installation and Usage**
 
-### Prerequisites
-- ComfyUI (latest version)
-- Required models:
-  - ICEdit (for image workflow)
-  - normal_lora.safetensors
-  - wan2.1_fun_control_1.3B_bf16.safetensors (for video workflow)
-  - Wan VAE and CLIP Vision models
+### **Prerequisites**
 
+* A working installation of [ComfyUI](https://github.com/comfyanonymous/ComfyUI).  
+* [ComfyUI Manager](https://github.com/ltdrdata/ComfyUI-Manager) for simplified installation of custom nodes.  
+* A CUDA-enabled GPU with at least **24GB of VRAM** is recommended.  
+* API access to OpenAI's GPT-4o for the detail-infusion stage.
 
-### Setup Instructions
+### **Setup Instructions**
 
-1. **Clone this repository**
-   ```bash
+1. **Clone this repository:**  
+   Bash  
    git clone https://github.com/BoreZhang/Digital-Mystique.git
-   cd Digital-Mystique
-   ```
 
-2. **Install ComfyUI**
-   - Follow the [official installation instructions](https://github.com/comfyanonymous/ComfyUI)
-   - Recommended to use the latest version (v0.3.34+)
-   - Install ComfyUI Manager from the [official repository](https://github.com/ltdrdata/ComfyUI-Manager) for easy node management
-   - The required custom nodes will be automatically detected and installed when loading the workflows
+   Navigate into the Digital-Mystique directory and place the .json workflow files into your ComfyUI/workflows directory (or load them directly).  
+2. Install Custom Nodes:  
+   Using the ComfyUI Manager, install the following custom nodes:  
+   * human-parser-comfyui-node by CozyMantis (for body segmentation).  
+   * A node that supports face parsing (e.g., from the ComfyUI Impact Pack or other community nodes that wrap models like jonathandinu/face-parsing).  
+3. Download Required Models:  
+   Place the following models into the correct subdirectories within your ComfyUI/models/ folder:  
+   * **FLUX.1 Models** (place in ComfyUI/models/flux/):  
+     * flux1-schnell.safetensors  
+     * flux1-kontext.safetensors  
+   * **Text Encoders** (place in ComfyUI/models/clip/):  
+     * clip\_g.safetensors  
+     * clip\_l.safetensors  
+     * t5xxl\_fp16.safetensors  
+   * **Segmentation Models** (for human-parser-comfyui-node, place in ComfyUI/models/schp/):  
+     * Download the model based on the LIP dataset as recommended in the node's documentation.  
+   * **Video Model** (place in ComfyUI/models/checkpoints/ or a dedicated video model folder):  
+     * Wan2.1-Fun-1.3B-Control.safetensors  
+4. Restart ComfyUI:  
+   Ensure you fully restart ComfyUI after installing new nodes and models for them to be recognized.
 
-3. **Download required models**
-   
-   **For Image Workflow:**
-   - ICEdit model
-     - Download `normal_lora.safetensors` from [ICEdit GitHub](https://github.com/River-Zhang/ICEdit/releases/download/v0.1.0/normal_lora.safetensors)
-     - Place in `ComfyUI/models/loras/`
-   - Flux models
-     - Download `flux1-fill-dev.safetensors` from [Flux Hub](https://huggingface.co/fluxion/flux1-fill-dev/blob/main/flux1-fill-dev.safetensors)
-     - Place in `ComfyUI/models/unet/`
-   - Text encoders
-     - Download `t5xxl_fp16.safetensors` from [Hugging Face](https://huggingface.co/fluxion/t5xxl-clip/blob/main/t5xxl_fp16.safetensors) 
-     - Download `clip_l.safetensors` from [Hugging Face](https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/pytorch_model.bin?download=true) (convert to safetensors format)
-     - Place in `ComfyUI/models/clip/`
-   - Upscaler
-     - Download `4xNomos8kDAT.safetensors` from [Civitai](https://civitai.com/models/124421/4xnomos8k)
-     - Place in `ComfyUI/models/upscale_models/`
+### **Execution**
 
-   **For Video Workflow:**
-   - Wan 2.1 Fun Control
-     - Download `wan2.1_fun_control_1.3B_bf16.safetensors` from [Comfy-Org/Wan_2.1_ComfyUI_repackaged](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/diffusion_models/wan2.1_fun_control_1.3B_bf16.safetensors?download=true)
-     - Place in `ComfyUI/models/diffusion_models/`
-   - Wan VAE
-     - Download `wan_2.1_vae.safetensors` from [Hugging Face](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors?download=true)
-     - Place in `ComfyUI/models/vae/`
-   - Text encoder
-     - Download `umt5_xxl_fp8_e4m3fn_scaled.safetensors` from [Hugging Face](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors?download=true)
-     - Place in `ComfyUI/models/text_encoders/`
-   - CLIP Vision
-     - Download `clip_vision_h.safetensors` from [Hugging Face](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/clip_vision/clip_vision_h.safetensors?download=true)
-     - Place in `ComfyUI/models/clip_vision/`
+1. **Image Generation**:  
+   * Load the Mystique\_Image\_Hybrid.json workflow in ComfyUI.  
+   * Provide your source image.  
+   * Run the workflow to generate the structure-perfect base image and the skin mask.  
+   * Use these assets along with GPT-4o to create the detail layer, then composite them in Photoshop.  
+2. **Video Synthesis**:  
+   * Load the Mystique\_Video\_Synthesis.json workflow.  
+   * Input your source video and the final composited image from the previous step.  
+   * Run the workflow to generate the final transformed video.
 
-4. **Import workflows**
-   - Launch ComfyUI
-   - In the UI, click on "Load" button
-   - Import `Mystique_Image.json` or `Mystique_Video.json` workflow file
-   - ComfyUI Manager will prompt you to install any missing custom nodes
+## **📄 Citation**
 
-5. **Prepare test images/videos**
-   - For best results, use portrait images with good lighting and clear features
-   - For videos, use sequences with moderate motion and consistent lighting
-   - Place test media in `ComfyUI/input` directory
+This project is the practical implementation of the research detailed in the dissertation:
 
-### Using the Image Workflow
-1. Load an input portrait image
-2. Adjust the human segmentation masks if necessary
-3. Modify the instruction prompt if desired
-4. Run the workflow to generate the transformed image
-5. For best results, fine-tune the final output in Photoshop
+Zhang, B. (2025). *Digital Mystique: A Hybrid Workflow for High-Fidelity Character Transformation*. MSc Dissertation, Bournemouth University.
 
-### Using the Video Workflow
-1. Prepare a video with the subject you want to transform
-2. Load the video into the workflow
-3. Adjust attention parameters for your specific case
-4. Run the workflow to generate a transformed video
-5. For longer videos, consider processing in segments
+This work utilizes several key open-source models and frameworks. Please cite the original authors if you build upon this research.
 
-## 🔍 Future Improvements
+## **🙏 Acknowledgements**
 
-- Integration with newer models like VACE and HunyuanCustom as hardware becomes more accessible
-- Development of specialized LoRAs for improved Mystique transformations
-- Real-time processing capabilities for live applications
+We would like to express our sincere gratitude to the teams and individuals whose work made this project possible:
 
-## 📝 Citation
+* **Black Forest Labs (FluxAI)** for their groundbreaking FLUX.1-Kontext model, which was essential for identity preservation.  
+* **OpenAI** for the advanced image manipulation and detail generation capabilities of GPT-4o.  
+* **Alibaba PAI (Wan AI)** for developing the accessible and effective Wan 2.1 Fun Control video model.  
+* **The ComfyUI team** for their excellent and extensible AI workflow platform.  
+* **CozyMantis** for creating the invaluable Human Parts Detector node for body segmentation.  
+* **Jonathan Dinu** for the face-parsing model, which enabled precise facial segmentation.  
+* The creators of **ICEdit** and **HiDream** for their research into instruction-based image editing, which informed our initial comparative analysis.  
+* The many contributors to the **Hugging Face** ecosystem and libraries like **Diffusers** for democratizing access to state-of-the-art models.
 
-If you use this project in your work, please cite:
-
-```bibtex
-@misc{DigitalMystique2025,
-  author = {Your Name},
-  title = {Digital Mystique: AI-Powered X-Men Character Skin Transformation},
-  year = {2025},
-  publisher = {GitHub},
-  url = {https://github.com/yourusername/digital-mystique}
-}
-```
-
-## 🙏 Acknowledgements
-
-We would like to express our sincere gratitude to:
-
-- [Metaphysic.ai](https://metaphysic.ai/) for the project concept and inspiration
-- [ComfyUI](https://github.com/comfyanonymous/ComfyUI) team for their excellent AI workflow platform
-- [ICEdit](https://github.com/River-Zhang/ICEdit) creators for their innovative single-LoRA image editing technique
-- [Wan AI](https://wanai.io/) for developing the Wan 2.1 Fun Control video model
-- [HiDream-ai](https://github.com/HiDream-ai/HiDream-e1) team for their instruction-based image editing model
-- Contributors to [SD3](https://stability.ai/), [Qwen](https://github.com/QwenLM/Qwen), [umt5-xxl](https://huggingface.co/google/umt5-xxl), [diffusers](https://github.com/huggingface/diffusers) and [HuggingFace](https://huggingface.co/) repositories for their open research
-- [GPT-4o Vision](https://openai.com/research/gpt4o) team for advanced image manipulation capabilities
-- [FluxAI](https://fluxai.co/) for their Flux models and Fill technology
-- Creators of [Human Parts Segmentation](https://github.com/hn3000/comfyui-human-parts) and [RMBG](https://github.com/kijai/ComfyUI-RMBG) tools
-- All open-source contributors whose work has made this project possible
-
-This project stands on the shoulders of these giants in the AI and computer vision community, and would not be possible without their commitment to open research and development.
-
+This project stands on the shoulders of these giants in the AI and computer vision community. Their commitment to open research and development has been fundamental to our success.
