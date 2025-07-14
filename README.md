@@ -1,5 +1,5 @@
 # **Digital Mystique: AI-Powered X-Men Character Skin Transformation**
-!(https://github.com/BoreZhang/Digital-Mystique/blob/main/Workflow.png)
+![Workflow] (https://github.com/BoreZhang/Digital-Mystique/blob/main/Workflow.png)
 ## **📚 Project Overview**
 
 This project implements an innovative digital character transformation workflow, designed to resolve the core conflict in generative AI between **identity preservation** and **high-fidelity detail generation**. Using the character Mystique from *X-Men* as a case study, this research addresses the limitations of both time-consuming practical effects and single-model AI approaches.
